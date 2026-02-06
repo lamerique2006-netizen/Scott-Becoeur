@@ -10,25 +10,29 @@ async function generateImages(prompt, count = 3) {
       return getMockImages(count);
     }
 
-    // Try Higgsfield API (adjust endpoint as needed)
-    // Standard format: POST with prompt, API key in header or body
-    const response = await axios.post('https://api.higgsfield.ai/api/images/generate', {
+    // Higgsfield API endpoint: https://cloud.higgsfield.ai
+    // POST to generate images with X-API-Key auth
+    const response = await axios.post('https://api.higgsfield.ai/v1/txt2img', {
       prompt: prompt,
       width: 1024,
       height: 1024,
-      num_images: count
+      num_inference_steps: 30,
+      guidance_scale: 7.5
     }, {
       headers: {
-        'Authorization': `Bearer ${API_KEY}`,
+        'X-API-Key': API_KEY,
         'Content-Type': 'application/json'
       },
-      timeout: 60000
+      timeout: 120000
     });
 
-    if (response.data && response.data.images) {
-      return response.data.images.map((url, i) => ({
+    // Handle different response formats
+    const images = response.data.images || response.data.data || response.data.url ? [response.data.url] : [];
+    
+    if (images.length > 0) {
+      return images.map((url, i) => ({
         id: `hf-${Date.now()}-${i}`,
-        url: url,
+        url: typeof url === 'string' ? url : url.url,
         prompt: prompt
       }));
     }
