@@ -7,14 +7,12 @@ import './App.css';
 
 function App() {
   const [currentStep, setCurrentStep] = useState('input');
-  const [productData, setProductData] = useState(null);
   const [images, setImages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [video, setVideo] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleProductSubmit = async (data) => {
-    setProductData(data);
     setLoading(true);
     try {
       const response = await fetch('/api/generate-images', {
