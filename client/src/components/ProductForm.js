@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
-export default function ProductForm({ onSubmit, loading }) {
+export default function ProductForm({ onSubmit, loading, apiUrl = 'http://localhost:5000' }) {
   const [url, setUrl] = useState('');
   const [adType, setAdType] = useState('facebook');
   const [scraped, setScraped] = useState(null);
 
   const handleScrape = async () => {
     try {
-      const response = await fetch('/api/scrape', {
+      const response = await fetch(`${apiUrl}/api/scrape`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url })

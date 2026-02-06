@@ -11,11 +11,12 @@ function App() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [video, setVideo] = useState(null);
   const [loading, setLoading] = useState(false);
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
   const handleProductSubmit = async (data) => {
     setLoading(true);
     try {
-      const response = await fetch('/api/generate-images', {
+      const response = await fetch(`${API_URL}/api/generate-images`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
@@ -34,7 +35,7 @@ function App() {
   const handleVideoGeneration = async (videoData) => {
     setLoading(true);
     try {
-      const response = await fetch('/api/generate-video', {
+      const response = await fetch(`${API_URL}/api/generate-video`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -69,7 +70,7 @@ function App() {
           transition={{ duration: 0.5 }}
         >
           {currentStep === 'input' && (
-            <ProductForm onSubmit={handleProductSubmit} loading={loading} />
+            <ProductForm onSubmit={handleProductSubmit} loading={loading} apiUrl={API_URL} />
           )}
           {currentStep === 'images' && (
             <ImageGallery
