@@ -1,7 +1,8 @@
 import React from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import Dashboard from './components/Dashboard';
+import Landing from './components/Landing';
 import DemoMode from './components/DemoMode';
+import Dashboard from './components/Dashboard';
 import Signup from './components/Signup';
 import Login from './components/Login';
 import './App.css';
@@ -14,6 +15,9 @@ function AppContent() {
   const [demoMode, setDemoMode] = React.useState(
     localStorage.getItem('demoMode') === 'true'
   );
+  const [showLanding, setShowLanding] = React.useState(
+    localStorage.getItem('showLanding') !== 'false'
+  );
 
   // Demo mode (no auth required)
   if (demoMode) {
@@ -21,9 +25,23 @@ function AppContent() {
       <DemoMode 
         onSignupClick={() => {
           setDemoMode(false);
+          setShowLanding(false);
           localStorage.removeItem('demoMode');
+          localStorage.setItem('showLanding', 'false');
         }}
         apiUrl={API_URL}
+      />
+    );
+  }
+
+  // Landing page (no auth required)
+  if (showLanding && (!user || !token)) {
+    return (
+      <Landing
+        onTryDemo={() => {
+          setDemoMode(true);
+          localStorage.setItem('demoMode', 'true');
+        }}
       />
     );
   }
@@ -45,12 +63,12 @@ function AppContent() {
         )}
         <button
           onClick={() => {
-            setDemoMode(true);
-            localStorage.setItem('demoMode', 'true');
+            setShowLanding(true);
+            localStorage.setItem('showLanding', 'true');
           }}
           className="fixed bottom-6 right-6 px-6 py-2 bg-slate-700/50 text-slate-300 rounded-lg hover:bg-slate-600 transition text-sm border border-slate-600"
         >
-          ← Try Demo
+          ← Back to Landing
         </button>
       </div>
     );
