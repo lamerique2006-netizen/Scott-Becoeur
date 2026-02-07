@@ -1,24 +1,52 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ProductForm from './components/ProductForm';
 import ImageGallery from './components/ImageGallery';
 import VideoPreview from './components/VideoPreview';
+import Signup from './components/Signup';
+import Login from './components/Login';
 import './App.css';
 
-function App() {
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+function AppContent() {
+  const { user, logout, token } = useAuth();
   const [currentStep, setCurrentStep] = useState('input');
   const [images, setImages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [video, setVideo] = useState(null);
   const [loading, setLoading] = useState(false);
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
+
+  // Not authenticated
+  if (!user || !token) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+        {authMode === 'signup' ? (
+          <Signup 
+            onSignupSuccess={() => setAuthMode('loggedIn')}
+            onLoginClick={() => setAuthMode('login')}
+          />
+        ) : (
+          <Login 
+            onLoginSuccess={() => setAuthMode('loggedIn')}
+            onSignupClick={() => setAuthMode('signup')}
+          />
+        )}
+      </div>
+    );
+  }
 
   const handleProductSubmit = async (data) => {
     setLoading(true);
     try {
       const response = await fetch(`${API_URL}/api/generate-images`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(data)
       });
       const result = await response.json();
@@ -37,7 +65,10 @@ function App() {
     try {
       const response = await fetch(`${API_URL}/api/generate-video`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({
           imageUrl: selectedImage,
           ...videoData
@@ -56,10 +87,18 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      <header className="border-b border-slate-700 bg-slate-800/50 backdrop-blur">
-        <div className="container mx-auto px-4 py-6">
-          <h1 className="text-4xl font-bold text-white">AdFlow</h1>
-          <p className="text-slate-400 mt-2">AI-powered ad creation for e-commerce</p>
+      <header className="border-b border-slate-700 bg-slate-800/50 backdrop-blur sticky top-0 z-40">
+        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
+          <div>
+            <h1 className="text-4xl font-bold text-white">AdFlow</h1>
+            <p className="text-slate-400 text-sm mt-1">Logged in as {user.email}</p>
+          </div>
+          <button 
+            onClick={logout}
+            className="px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition text-sm"
+          >
+            Sign Out
+          </button>
         </div>
       </header>
 
@@ -152,4 +191,10 @@ function VideoOptions({ onGenerateVideo, loading, onBack }) {
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <AuthProvider apiUrl={API_URL}>
+      <AppContent />
+    </AuthProvider>
+  );
+}

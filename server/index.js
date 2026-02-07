@@ -2,10 +2,12 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const db = require('./db');
 const scraper = require('./scraper');
 const adGenerator = require('./services/adGenerator');
 const higgsfield = require('./services/higgsfield');
 const kling = require('./services/kling');
+const { router: authRouter, authenticate } = require('./routes/auth');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -13,6 +15,9 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Auth routes
+app.use('/api/auth', authRouter);
 
 // Health check
 app.get('/health', (req, res) => {
@@ -32,7 +37,7 @@ app.post('/api/scrape', async (req, res) => {
   }
 });
 
-app.post('/api/generate-images', async (req, res) => {
+app.post('/api/generate-images', authenticate, async (req, res) => {
   try {
     const { productName, productDescription, adType } = req.body;
     if (!productName || !adType) {
@@ -47,7 +52,7 @@ app.post('/api/generate-images', async (req, res) => {
   }
 });
 
-app.post('/api/generate-video', async (req, res) => {
+app.post('/api/generate-video', authenticate, async (req, res) => {
   try {
     const { imageUrl, videoStyle, customPrompt } = req.body;
     if (!imageUrl) return res.status(400).json({ error: 'imageUrl required' });
