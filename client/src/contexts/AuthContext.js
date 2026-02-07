@@ -9,26 +9,26 @@ export function AuthProvider({ children, apiUrl }) {
 
   // Load user on mount if token exists
   useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/api/auth/profile`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const result = await response.json();
+          setUser(result.data);
+        } else {
+          logout();
+        }
+      } catch (error) {
+        console.error('Profile fetch error:', error);
+      }
+    };
+
     if (token) {
       fetchProfile();
     }
-  }, [token]);
-
-  const fetchProfile = async () => {
-    try {
-      const response = await fetch(`${apiUrl}/api/auth/profile`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const result = await response.json();
-        setUser(result.data);
-      } else {
-        logout();
-      }
-    } catch (error) {
-      console.error('Profile fetch error:', error);
-    }
-  };
+  }, [token, apiUrl]);
 
   const signup = async (email, password) => {
     setLoading(true);
