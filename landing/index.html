@@ -5,45 +5,137 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AdFlow - AI Ad Generator for E-Commerce</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
         * { font-family: 'Poppins', sans-serif; }
-        .gradient-text { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .glow { box-shadow: 0 0 30px rgba(102, 126, 234, 0.4); }
+        
+        body { 
+            overflow-x: hidden;
+            background: #000;
+        }
+
+        .gradient-text { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text; 
+        }
+
+        .glow { 
+            box-shadow: 0 0 40px rgba(102, 126, 234, 0.6), 0 0 80px rgba(102, 126, 234, 0.3);
+        }
+
+        .glow-hover:hover {
+            box-shadow: 0 0 60px rgba(102, 126, 234, 0.8), 0 0 100px rgba(102, 126, 234, 0.5);
+            transform: translateY(-8px);
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 40px rgba(102, 126, 234, 0.6); }
+            50% { box-shadow: 0 0 80px rgba(102, 126, 234, 0.9); }
+        }
+
+        @keyframes slide-in {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slide-in-right {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .float { animation: float 3s ease-in-out infinite; }
+        .pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+        .slide-in { animation: slide-in 0.8s ease-out; }
+        .slide-in-right { animation: slide-in-right 0.8s ease-out; }
+
+        .nav-blur { backdrop-filter: blur(10px); }
+
+        /* Feature cards */
+        .feature-card {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(71, 85, 105, 0.5);
+        }
+
+        .feature-card:hover {
+            border-color: rgba(59, 130, 246, 0.8);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            h1 { font-size: 2.5rem !important; }
+            h2 { font-size: 1.75rem !important; }
+            .scale-105 { transform: scale(1) !important; }
+        }
+
+        /* Smooth scroll */
+        html { scroll-behavior: smooth; }
+
+        /* Gradient animation */
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .gradient-animate {
+            background-size: 200% 200%;
+            animation: gradient-shift 8s ease infinite;
+        }
     </style>
 </head>
 <body class="bg-black text-white">
     <!-- Navigation -->
-    <nav class="fixed w-full bg-black/80 backdrop-blur border-b border-slate-800 z-50">
+    <nav class="fixed w-full z-50 nav-blur bg-black/40 border-b border-slate-800/50">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
             <div class="text-2xl font-bold gradient-text">AdFlow</div>
-            <div class="flex gap-6">
-                <a href="#pricing" class="hover:text-blue-400">Pricing</a>
-                <a href="#features" class="hover:text-blue-400">Features</a>
-                <button onclick="scrollToApp()" class="px-6 py-2 bg-blue-600 rounded-lg hover:bg-blue-700">Get Started</button>
+            <div class="hidden md:flex gap-8">
+                <a href="#features" class="hover:text-blue-400 transition">Features</a>
+                <a href="#pricing" class="hover:text-blue-400 transition">Pricing</a>
+                <a href="#howitworks" class="hover:text-blue-400 transition">How It Works</a>
             </div>
-        </nav>
+            <button onclick="scrollToApp()" class="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg hover:shadow-lg transition glow-hover text-sm md:text-base">Get Started</button>
+        </div>
+    </nav>
 
     <!-- Hero -->
-    <section class="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-900 to-black pt-20 px-4">
-        <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-6xl md:text-7xl font-bold mb-6">
-                Create <span class="gradient-text">Stunning Ads</span> in Seconds
+    <section class="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-900 via-black to-black pt-24 px-4 md:px-8 relative overflow-hidden">
+        <!-- Animated background -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+            <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        </div>
+
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <h1 class="text-5xl md:text-7xl font-black mb-6 leading-tight" data-aos="fade-up" data-aos-duration="800">
+                Create <span class="gradient-text">Stunning Ads</span><br class="hidden md:block"/> in Seconds
             </h1>
-            <p class="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
+            <p class="text-base md:text-xl text-slate-300 mb-8 max-w-2xl mx-auto leading-relaxed" data-aos="fade-up" data-aos-delay="200" data-aos-duration="800">
                 Paste your product link. Choose your style. Get 5 Instagram, Facebook, and TikTok ads powered by AI. No design skills needed.
             </p>
-            <button onclick="scrollToApp()" class="px-8 py-4 bg-blue-600 text-white rounded-lg font-semibold text-lg hover:bg-blue-700 glow">
+            <button onclick="scrollToApp()" class="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-bold text-lg hover:shadow-2xl transition glow-hover" data-aos="zoom-in" data-aos-delay="400" data-aos-duration="800">
                 Try Free Demo
             </button>
-            <p class="text-slate-400 mt-4">No credit card required</p>
+            <p class="text-slate-400 mt-4" data-aos="fade-up" data-aos-delay="600">No credit card required</p>
 
             <!-- Demo Preview -->
-            <div class="mt-16 bg-slate-800/50 rounded-2xl border border-slate-700 p-8 glow">
-                <div class="aspect-video bg-gradient-to-br from-blue-900 to-purple-900 rounded-lg flex items-center justify-center">
-                    <div class="text-center">
-                        <div class="text-4xl mb-2">🎨</div>
-                        <p class="text-slate-300">See AI-Generated Ads in Action</p>
+            <div class="mt-16 bg-slate-800/30 rounded-2xl border border-slate-700/50 p-6 md:p-8 glow" data-aos="fade-up" data-aos-delay="800" data-aos-duration="1000">
+                <div class="aspect-video bg-gradient-to-br from-blue-900 via-purple-900 to-black rounded-lg flex items-center justify-center relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-10 animate-pulse"></div>
+                    <div class="text-center relative z-10">
+                        <div class="text-5xl md:text-6xl mb-4 float">🎨</div>
+                        <p class="text-slate-300 text-sm md:text-base">See AI-Generated Ads in Action</p>
                     </div>
                 </div>
             </div>
@@ -51,132 +143,132 @@
     </section>
 
     <!-- Features -->
-    <section id="features" class="py-20 px-4 bg-black border-t border-slate-800">
+    <section id="features" class="py-20 md:py-32 px-4 md:px-8 bg-black border-t border-slate-800">
         <div class="max-w-6xl mx-auto">
-            <h2 class="text-4xl font-bold text-center mb-16">Why Sellers Choose AdFlow</h2>
-            <div class="grid md:grid-cols-3 gap-8">
+            <h2 class="text-4xl md:text-5xl font-bold text-center mb-16" data-aos="fade-up">Why Sellers Choose AdFlow</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                 <!-- Feature 1 -->
-                <div class="bg-slate-800/30 border border-slate-700 rounded-xl p-8 hover:border-blue-500 transition">
-                    <div class="text-3xl mb-4">⚡</div>
-                    <h3 class="text-xl font-semibold mb-2">5 Ads in 30 Seconds</h3>
-                    <p class="text-slate-400">Paste a URL. Get 5 variations instantly. No waiting, no design tools.</p>
+                <div class="feature-card bg-slate-800/20 rounded-xl p-6 md:p-8 hover:bg-slate-800/40" data-aos="fade-up" data-aos-delay="0">
+                    <div class="text-4xl mb-4">⚡</div>
+                    <h3 class="text-lg md:text-xl font-semibold mb-3">5 Ads in 30 Seconds</h3>
+                    <p class="text-slate-400 text-sm md:text-base">Paste a URL. Get 5 variations instantly. No waiting, no design tools.</p>
                 </div>
                 <!-- Feature 2 -->
-                <div class="bg-slate-800/30 border border-slate-700 rounded-xl p-8 hover:border-blue-500 transition">
-                    <div class="text-3xl mb-4">🎯</div>
-                    <h3 class="text-xl font-semibold mb-2">Multi-Platform Ready</h3>
-                    <p class="text-slate-400">Facebook, Instagram, TikTok, Google. One click, all formats.</p>
+                <div class="feature-card bg-slate-800/20 rounded-xl p-6 md:p-8 hover:bg-slate-800/40" data-aos="fade-up" data-aos-delay="100">
+                    <div class="text-4xl mb-4">🎯</div>
+                    <h3 class="text-lg md:text-xl font-semibold mb-3">Multi-Platform Ready</h3>
+                    <p class="text-slate-400 text-sm md:text-base">Facebook, Instagram, TikTok, Google. One click, all formats.</p>
                 </div>
                 <!-- Feature 3 -->
-                <div class="bg-slate-800/30 border border-slate-700 rounded-xl p-8 hover:border-blue-500 transition">
-                    <div class="text-3xl mb-4">🤖</div>
-                    <h3 class="text-xl font-semibold mb-2">AI-Powered Copy</h3>
-                    <p class="text-slate-400">Professional headlines, CTAs, and descriptions tuned for conversions.</p>
+                <div class="feature-card bg-slate-800/20 rounded-xl p-6 md:p-8 hover:bg-slate-800/40" data-aos="fade-up" data-aos-delay="200">
+                    <div class="text-4xl mb-4">🤖</div>
+                    <h3 class="text-lg md:text-xl font-semibold mb-3">AI-Powered Copy</h3>
+                    <p class="text-slate-400 text-sm md:text-base">Professional headlines, CTAs, and descriptions tuned for conversions.</p>
                 </div>
                 <!-- Feature 4 -->
-                <div class="bg-slate-800/30 border border-slate-700 rounded-xl p-8 hover:border-blue-500 transition">
-                    <div class="text-3xl mb-4">📱</div>
-                    <h3 class="text-xl font-semibold mb-2">Mobile Optimized</h3>
-                    <p class="text-slate-400">Ads that look perfect on every device and platform.</p>
+                <div class="feature-card bg-slate-800/20 rounded-xl p-6 md:p-8 hover:bg-slate-800/40" data-aos="fade-up" data-aos-delay="300">
+                    <div class="text-4xl mb-4">📱</div>
+                    <h3 class="text-lg md:text-xl font-semibold mb-3">Mobile Optimized</h3>
+                    <p class="text-slate-400 text-sm md:text-base">Ads that look perfect on every device and platform.</p>
                 </div>
                 <!-- Feature 5 -->
-                <div class="bg-slate-800/30 border border-slate-700 rounded-xl p-8 hover:border-blue-500 transition">
-                    <div class="text-3xl mb-4">📊</div>
-                    <h3 class="text-xl font-semibold mb-2">A/B Testing Built In</h3>
-                    <p class="text-slate-400">Multiple variations let you test and find what converts.</p>
+                <div class="feature-card bg-slate-800/20 rounded-xl p-6 md:p-8 hover:bg-slate-800/40" data-aos="fade-up" data-aos-delay="400">
+                    <div class="text-4xl mb-4">📊</div>
+                    <h3 class="text-lg md:text-xl font-semibold mb-3">A/B Testing Built In</h3>
+                    <p class="text-slate-400 text-sm md:text-base">Multiple variations let you test and find what converts.</p>
                 </div>
                 <!-- Feature 6 -->
-                <div class="bg-slate-800/30 border border-slate-700 rounded-xl p-8 hover:border-blue-500 transition">
-                    <div class="text-3xl mb-4">🔄</div>
-                    <h3 class="text-xl font-semibold mb-2">Always Learning</h3>
-                    <p class="text-slate-400">AI improves based on what works for your niche.</p>
+                <div class="feature-card bg-slate-800/20 rounded-xl p-6 md:p-8 hover:bg-slate-800/40" data-aos="fade-up" data-aos-delay="500">
+                    <div class="text-4xl mb-4">🔄</div>
+                    <h3 class="text-lg md:text-xl font-semibold mb-3">Always Learning</h3>
+                    <p class="text-slate-400 text-sm md:text-base">AI improves based on what works for your niche.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Pricing -->
-    <section id="pricing" class="py-20 px-4 bg-gradient-to-b from-black to-slate-900 border-t border-slate-800">
+    <section id="pricing" class="py-20 md:py-32 px-4 md:px-8 bg-gradient-to-b from-black to-slate-900 border-t border-slate-800">
         <div class="max-w-6xl mx-auto">
-            <h2 class="text-4xl font-bold text-center mb-16">Simple, Transparent Pricing</h2>
-            <div class="grid md:grid-cols-3 gap-8">
+            <h2 class="text-4xl md:text-5xl font-bold text-center mb-16" data-aos="fade-up">Simple, Transparent Pricing</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                 <!-- Starter -->
-                <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-8">
-                    <h3 class="text-2xl font-bold mb-2">Starter</h3>
-                    <p class="text-slate-400 mb-6">Perfect for testing</p>
-                    <div class="text-4xl font-bold mb-6">$0<span class="text-lg text-slate-400">/month</span></div>
-                    <ul class="space-y-3 mb-8 text-slate-300">
+                <div class="bg-slate-800/30 border border-slate-700/50 rounded-xl p-6 md:p-8 hover:border-blue-500/50 transition" data-aos="fade-up" data-aos-delay="0">
+                    <h3 class="text-xl md:text-2xl font-bold mb-2">Starter</h3>
+                    <p class="text-slate-400 mb-6 text-sm md:text-base">Perfect for testing</p>
+                    <div class="text-3xl md:text-4xl font-bold mb-6">$0<span class="text-base md:text-lg text-slate-400">/mo</span></div>
+                    <ul class="space-y-2 md:space-y-3 mb-8 text-slate-300 text-sm md:text-base">
                         <li>✓ 3 ad generations/month</li>
                         <li>✓ All platforms</li>
                         <li>✓ Email support</li>
                     </ul>
-                    <button onclick="scrollToApp()" class="w-full px-6 py-2 border border-blue-600 text-blue-400 rounded-lg hover:bg-blue-600/10">Get Started</button>
+                    <button onclick="scrollToApp()" class="w-full px-4 py-3 border border-blue-600 text-blue-400 rounded-lg hover:bg-blue-600/10 transition font-semibold text-sm md:text-base">Get Started</button>
                 </div>
 
                 <!-- Growth (Popular) -->
-                <div class="bg-gradient-to-b from-blue-900/40 to-purple-900/40 border-2 border-blue-600 rounded-xl p-8 relative scale-105">
-                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 px-4 py-1 rounded text-sm">Most Popular</div>
-                    <h3 class="text-2xl font-bold mb-2">Growth</h3>
-                    <p class="text-slate-400 mb-6">For serious sellers</p>
-                    <div class="text-4xl font-bold mb-6">$29<span class="text-lg text-slate-400">/month</span></div>
-                    <ul class="space-y-3 mb-8 text-slate-300">
+                <div class="bg-gradient-to-br from-blue-900/30 to-purple-900/30 border-2 border-blue-600/50 rounded-xl p-6 md:p-8 relative transform md:scale-105 hover:scale-100 md:hover:scale-110 transition" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-1 rounded text-xs md:text-sm font-bold whitespace-nowrap">🚀 Most Popular</div>
+                    <h3 class="text-xl md:text-2xl font-bold mb-2">Growth</h3>
+                    <p class="text-slate-400 mb-6 text-sm md:text-base">For serious sellers</p>
+                    <div class="text-3xl md:text-4xl font-bold mb-6">$29<span class="text-base md:text-lg text-slate-400">/mo</span></div>
+                    <ul class="space-y-2 md:space-y-3 mb-8 text-slate-300 text-sm md:text-base">
                         <li>✓ 100 generations/month</li>
                         <li>✓ AI video preview</li>
                         <li>✓ Priority support</li>
-                        <li>✓ Performance analytics</li>
+                        <li>✓ Analytics dashboard</li>
                     </ul>
-                    <button onclick="scrollToApp()" class="w-full px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">Get Started</button>
+                    <button onclick="scrollToApp()" class="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-xl transition font-semibold glow-hover text-sm md:text-base">Get Started</button>
                 </div>
 
                 <!-- Pro -->
-                <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-8">
-                    <h3 class="text-2xl font-bold mb-2">Pro</h3>
-                    <p class="text-slate-400 mb-6">For agencies & teams</p>
-                    <div class="text-4xl font-bold mb-6">$99<span class="text-lg text-slate-400">/month</span></div>
-                    <ul class="space-y-3 mb-8 text-slate-300">
+                <div class="bg-slate-800/30 border border-slate-700/50 rounded-xl p-6 md:p-8 hover:border-blue-500/50 transition" data-aos="fade-up" data-aos-delay="400">
+                    <h3 class="text-xl md:text-2xl font-bold mb-2">Pro</h3>
+                    <p class="text-slate-400 mb-6 text-sm md:text-base">For agencies & teams</p>
+                    <div class="text-3xl md:text-4xl font-bold mb-6">$99<span class="text-base md:text-lg text-slate-400">/mo</span></div>
+                    <ul class="space-y-2 md:space-y-3 mb-8 text-slate-300 text-sm md:text-base">
                         <li>✓ 1,000 generations/month</li>
                         <li>✓ Full video generation</li>
                         <li>✓ Team collaboration</li>
                         <li>✓ API access</li>
                         <li>✓ Dedicated support</li>
                     </ul>
-                    <button onclick="scrollToApp()" class="w-full px-6 py-2 border border-blue-600 text-blue-400 rounded-lg hover:bg-blue-600/10">Get Started</button>
+                    <button onclick="scrollToApp()" class="w-full px-4 py-3 border border-blue-600 text-blue-400 rounded-lg hover:bg-blue-600/10 transition font-semibold text-sm md:text-base">Get Started</button>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- How It Works -->
-    <section class="py-20 px-4 bg-black border-t border-slate-800">
+    <section id="howitworks" class="py-20 md:py-32 px-4 md:px-8 bg-black border-t border-slate-800">
         <div class="max-w-4xl mx-auto">
-            <h2 class="text-4xl font-bold text-center mb-16">How It Works</h2>
-            <div class="space-y-8">
-                <div class="flex gap-6">
-                    <div class="text-3xl font-bold text-blue-600 min-w-12">1</div>
+            <h2 class="text-4xl md:text-5xl font-bold text-center mb-16" data-aos="fade-up">How It Works</h2>
+            <div class="space-y-8 md:space-y-12">
+                <div class="flex gap-4 md:gap-8" data-aos="slide-in-left">
+                    <div class="text-2xl md:text-3xl font-bold text-blue-600 min-w-12 md:min-w-16 flex-shrink-0">1</div>
                     <div>
-                        <h3 class="text-xl font-semibold mb-2">Paste Product Link</h3>
-                        <p class="text-slate-400">Share your Shopify, WooCommerce, or Amazon product URL</p>
+                        <h3 class="text-lg md:text-xl font-semibold mb-2">Paste Product Link</h3>
+                        <p class="text-slate-400 text-sm md:text-base">Share your Shopify, WooCommerce, or Amazon product URL</p>
                     </div>
                 </div>
-                <div class="flex gap-6">
-                    <div class="text-3xl font-bold text-blue-600 min-w-12">2</div>
+                <div class="flex gap-4 md:gap-8" data-aos="slide-in-left" data-aos-delay="200">
+                    <div class="text-2xl md:text-3xl font-bold text-blue-600 min-w-12 md:min-w-16 flex-shrink-0">2</div>
                     <div>
-                        <h3 class="text-xl font-semibold mb-2">Choose Your Style</h3>
-                        <p class="text-slate-400">Pick platform (Facebook/Instagram/TikTok) or vibe (luxury/trendy/minimalist)</p>
+                        <h3 class="text-lg md:text-xl font-semibold mb-2">Choose Your Style</h3>
+                        <p class="text-slate-400 text-sm md:text-base">Pick platform (Facebook/Instagram/TikTok) or vibe (luxury/trendy/minimalist)</p>
                     </div>
                 </div>
-                <div class="flex gap-6">
-                    <div class="text-3xl font-bold text-blue-600 min-w-12">3</div>
+                <div class="flex gap-4 md:gap-8" data-aos="slide-in-left" data-aos-delay="400">
+                    <div class="text-2xl md:text-3xl font-bold text-blue-600 min-w-12 md:min-w-16 flex-shrink-0">3</div>
                     <div>
-                        <h3 class="text-xl font-semibold mb-2">Get 5 Variations</h3>
-                        <p class="text-slate-400">AI generates complete ads with images, headlines, and copy</p>
+                        <h3 class="text-lg md:text-xl font-semibold mb-2">Get 5 Variations</h3>
+                        <p class="text-slate-400 text-sm md:text-base">AI generates complete ads with images, headlines, and copy</p>
                     </div>
                 </div>
-                <div class="flex gap-6">
-                    <div class="text-3xl font-bold text-blue-600 min-w-12">4</div>
+                <div class="flex gap-4 md:gap-8" data-aos="slide-in-left" data-aos-delay="600">
+                    <div class="text-2xl md:text-3xl font-bold text-blue-600 min-w-12 md:min-w-16 flex-shrink-0">4</div>
                     <div>
-                        <h3 class="text-xl font-semibold mb-2">Launch & Track</h3>
-                        <p class="text-slate-400">Download and run directly on your ad platform. See what converts.</p>
+                        <h3 class="text-lg md:text-xl font-semibold mb-2">Launch & Track</h3>
+                        <p class="text-slate-400 text-sm md:text-base">Download and run directly on your ad platform. See what converts.</p>
                     </div>
                 </div>
             </div>
@@ -184,27 +276,56 @@
     </section>
 
     <!-- CTA -->
-    <section class="py-20 px-4 bg-gradient-to-r from-blue-900 to-purple-900 border-t border-slate-800">
-        <div class="max-w-4xl mx-auto text-center">
-            <h2 class="text-4xl font-bold mb-6">Stop Wasting Time on Ads</h2>
-            <p class="text-xl text-slate-200 mb-8">Join 100+ sellers already using AdFlow to scale their businesses</p>
-            <button onclick="scrollToApp()" class="px-8 py-4 bg-white text-blue-600 rounded-lg font-semibold text-lg hover:bg-slate-100">
+    <section class="py-16 md:py-24 px-4 md:px-8 bg-gradient-to-r from-blue-900 via-purple-900 to-black border-t border-slate-800 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-30">
+            <div class="absolute -top-20 -right-20 w-40 h-40 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl"></div>
+            <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl"></div>
+        </div>
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6" data-aos="fade-up">Stop Wasting Time on Ads</h2>
+            <p class="text-base md:text-xl text-slate-200 mb-8" data-aos="fade-up" data-aos-delay="200">Join 100+ sellers already using AdFlow to scale their businesses</p>
+            <button onclick="scrollToApp()" class="px-8 py-4 bg-white text-blue-600 rounded-lg font-bold hover:shadow-2xl transition glow-hover text-base md:text-lg" data-aos="zoom-in" data-aos-delay="400">
                 Try Free Now
             </button>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-black border-t border-slate-800 py-12 px-4">
-        <div class="max-w-6xl mx-auto text-center text-slate-500">
+    <footer class="bg-black border-t border-slate-800 py-8 md:py-12 px-4">
+        <div class="max-w-6xl mx-auto text-center text-slate-500 text-sm md:text-base">
             <p>&copy; 2026 AdFlow. Built for e-commerce sellers by e-commerce sellers.</p>
+            <div class="flex gap-6 justify-center mt-4 text-xs md:text-sm">
+                <a href="#" class="hover:text-slate-300 transition">Privacy</a>
+                <a href="#" class="hover:text-slate-300 transition">Terms</a>
+                <a href="#" class="hover:text-slate-300 transition">Contact</a>
+            </div>
         </div>
     </footer>
 
     <script>
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+
         function scrollToApp() {
-            alert('App coming soon! Enter your email to get early access.\n\nFor now, visit:\nhttps://scott-becoeur.onrender.com');
+            alert('🚀 App coming soon!\n\nFor now, try the demo:\nhttps://scott-becoeur.vercel.app\n\nBackend: https://scott-becoeur.onrender.com');
         }
     </script>
+
+    <style>
+        @keyframes blob {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+    </style>
 </body>
 </html>
