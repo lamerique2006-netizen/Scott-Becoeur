@@ -1,46 +1,66 @@
 const axios = require('axios');
 
-const API_KEY = process.env.HIGGSFIELD_API_KEY;
-const API_SECRET = process.env.HIGGSFIELD_SECRET_KEY;
+// Using Replicate API for image generation
+const REPLICATE_API_KEY = process.env.REPLICATE_API_KEY;
 
 async function generateImages(prompt, count = 3) {
   try {
-    if (!API_KEY) {
-      console.warn('Higgsfield API key missing. Returning mock data.');
+    if (!REPLICATE_API_KEY) {
+      console.warn('Replicate API key missing. Returning mock data.');
       return getMockImages(count);
     }
 
-    // Higgsfield API endpoint: https://cloud.higgsfield.ai
-    // POST to generate images with X-API-Key auth
-    const response = await axios.post('https://api.higgsfield.ai/v1/txt2img', {
-      prompt: prompt,
-      width: 1024,
-      height: 1024,
-      num_inference_steps: 30,
-      guidance_scale: 7.5
-    }, {
-      headers: {
-        'X-API-Key': API_KEY,
-        'Content-Type': 'application/json'
-      },
-      timeout: 120000
+    // Use Replicate API with Stable Diffusion
+    // https://replicate.com/stability-ai/stable-diffusion
+    const promises = Array(count).fill(null).map(() => 
+      axios.post('https://api.replicate.com/v1/predictions', {
+        version: 'a9d47cee2f51b56e9280ce2ff0af282ef61d0b6379a53e5bba3ee62628a139b3', // Stable Diffusion
+        input: {
+          prompt: prompt,
+          width: 768,
+          height: 768,
+          num_outputs: 1,
+          num_inference_steps: 50,
+          guidance_scale: 7.5
+        }
+      }, {
+        headers: {
+          'Authorization': `Token ${REPLICATE_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        timeout: 180000 // 3 minutes for image generation
+      })
+    );
+
+    const results = await Promise.allSettled(promises);
+    const images = [];
+
+    results.forEach((result, i) => {
+      if (result.status === 'fulfilled' && result.value.data.output) {
+        const urls = Array.isArray(result.value.data.output) 
+          ? result.value.data.output 
+          : [result.value.data.output];
+        
+        urls.forEach((url, idx) => {
+          images.push({
+            id: `rep-${Date.now()}-${i}-${idx}`,
+            url: url,
+            prompt: prompt
+          });
+        });
+      }
     });
 
-    // Handle different response formats
-    const images = response.data.images || response.data.data || response.data.url ? [response.data.url] : [];
-    
+    // If successful predictions, return them
     if (images.length > 0) {
-      return images.map((url, i) => ({
-        id: `hf-${Date.now()}-${i}`,
-        url: typeof url === 'string' ? url : url.url,
-        prompt: prompt
-      }));
+      return images.slice(0, count);
     }
 
+    console.warn('Replicate returned no valid images, using mocks');
     return getMockImages(count);
   } catch (error) {
-    console.error('Higgsfield API error:', error.message);
-    console.log('Falling back to mocks. API key:', API_KEY ? 'set' : 'missing');
+    console.error('Replicate API error:', error.message);
+    console.log('Falling back to mocks. API key:', REPLICATE_API_KEY ? 'set' : 'missing');
     return getMockImages(count);
   }
 }
