@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useCallback } from 'react';
 
 export const AuthContext = createContext();
 
@@ -7,28 +7,34 @@ export function AuthProvider({ children, apiUrl }) {
   const [token, setToken] = useState(localStorage.getItem('token') || null);
   const [loading, setLoading] = useState(false);
 
+  const logout = useCallback(() => {
+    setToken(null);
+    setUser(null);
+    localStorage.removeItem('token');
+  }, []);
+
+  const fetchProfile = useCallback(async () => {
+    try {
+      const response = await fetch(`${apiUrl}/api/auth/profile`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const result = await response.json();
+        setUser(result.data);
+      } else {
+        logout();
+      }
+    } catch (error) {
+      console.error('Profile fetch error:', error);
+    }
+  }, [token, apiUrl, logout]);
+
   // Load user on mount if token exists
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await fetch(`${apiUrl}/api/auth/profile`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (response.ok) {
-          const result = await response.json();
-          setUser(result.data);
-        } else {
-          logout();
-        }
-      } catch (error) {
-        console.error('Profile fetch error:', error);
-      }
-    };
-
     if (token) {
       fetchProfile();
     }
-  }, [token, apiUrl]);
+  }, [token, fetchProfile]);
 
   const signup = async (email, password) => {
     setLoading(true);
@@ -74,12 +80,6 @@ export function AuthProvider({ children, apiUrl }) {
     } finally {
       setLoading(false);
     }
-  };
-
-  const logout = () => {
-    setToken(null);
-    setUser(null);
-    localStorage.removeItem('token');
   };
 
   return (
